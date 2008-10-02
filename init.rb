@@ -1,10 +1,11 @@
-%w[calendar_date_select includes_helper].each { |file| 
+%w[calendar_date_select includes_helper active_record_extension].each { |file| 
   require File.join( File.dirname(__FILE__), "lib",file) 
 }
 
 ActionView::Helpers::FormHelper.send(:include, CalendarDateSelect::FormHelper)
 ActionView::Base.send(:include, CalendarDateSelect::FormHelper)
 ActionView::Base.send(:include, CalendarDateSelect::IncludesHelper)
+ActiveRecord::Base.send(:extend, CalendarDateSelect::ActiveRecordExtension)
 
 # install files
 unless File.exists?(RAILS_ROOT + '/public/javascripts/calendar_date_select/calendar_date_select.js')
