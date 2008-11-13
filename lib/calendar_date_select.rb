@@ -52,6 +52,9 @@ class CalendarDateSelect
   cattr_reader :format
   @@format = FORMATS[:natural]
   
+  cattr_accessor :in_place
+  @@in_place = nil
+  
   class << self
     def format=(format)
       raise "CalendarDateSelect: Unrecognized format specification: #{format}" unless FORMATS.has_key?(format)
@@ -113,7 +116,7 @@ class CalendarDateSelect
     def calendar_date_select_process_options(options)
       calendar_options = {}
       callbacks = [:before_show, :before_close, :after_show, :after_close, :after_navigate]
-      for key in [:time, :valid_date_check, :embedded, :buttons, :clear_button, :format, :year_range, :month_year, :popup, :hidden, :minute_interval] + callbacks
+      for key in [:time, :valid_date_check, :embedded, :buttons, :clear_button, :format, :year_range, :month_year, :popup, :hidden, :minute_interval, :in_place] + callbacks
         calendar_options[key] = options.delete(key) if options.has_key?(key)
       end
       
@@ -175,6 +178,17 @@ class CalendarDateSelect
           nil
         end
 
+      calendar_options[:in_place] = CalendarDateSelect.in_place unless calendar_options.has_key? :in_place
+      if calendar_options[:in_place] &&
+         !(calendar_options[:hidden] || calendar_options[:embedded])
+        if options[:class].blank?
+          options[:class] = 'cds_field'
+        else
+          options[:class] << ' cds_field'
+        end
+        options[:onclick] = "new CalendarDateSelect($(this).id, #{options_for_javascript(calendar_options)});"
+      end
+      
       tag = ActionView::Helpers::InstanceTag.new(object, method, self, nil, options.delete(:object))
       calendar_date_select_output(
         tag.to_input_field_tag( (calendar_options[:hidden] || calendar_options[:embedded]) ? "hidden" : "text", options), 
@@ -190,7 +204,7 @@ class CalendarDateSelect
         out << content_tag(:span, nil, :style => "display: none; position: absolute;", :id => uniq_id)
         
         out << javascript_tag("new CalendarDateSelect( $('#{uniq_id}').previous(), #{options_for_javascript(calendar_options)} ); ")
-      else
+      elsif !calendar_options[:in_place]
         out << " "
         
         out << image_tag(CalendarDateSelect.image, 

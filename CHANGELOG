@@ -1,3 +1,9 @@
+== Version 1.11.1 ==
+ * new option :in_place
+ * include_calendar_date_select() helper method to use instead of calendar_date_select_includes()
+ * Added locale/it.js and locale/europe_en.js
+ see http://github.com/crhym3/calendar_date_select/wikis for details
+ 
 == Version 1.11 ==
 
  * Calendar Date Select now works as a ruby-gem (thanks, artmotion!)

@@ -27,12 +27,17 @@ class CalendarDateSelect
       @cds_already_included=true
       
       options = (Hash === args.last) ? args.pop : {}
-      options.assert_valid_keys(:style, :format, :locale)
+      options.assert_valid_keys(:style, :format, :locale, :in_place)
       options[:style] ||= args.shift
+      CalendarDateSelect.in_place = options.delete(:in_place)
 
       js = javascript_include_tag(*calendar_date_select_javascripts(options))
       css = stylesheet_link_tag(*calendar_date_select_stylesheets(options))
       "#{js}\n#{css}\n"
+    end
+    
+    def include_calendar_date_select(*args)
+      content_for(:head) { calendar_date_select_includes(*args) }
     end
   end
 end
